@@ -1,11 +1,8 @@
 # Multi-Agent Transformer
-This repository implements the Multi-Agent Transformer (MAT), which is a novel neural network based on the encoder-decoder architecture that implements a multi-agent learning process through sequence models. 
-
-**For more details, please visit our page site about Muti-Agent Transformer: https://sites.google.com/view/multi-agent-transformer .**
 
 MAT is a novel neural network based on the encoder-decoder architecture that implements a multi-agent learning process through sequence models, aiming to build the bridge between MARL and SM so that the modeling power of modern sequence models, the Transformer, can be unleashed for MARL. 
 
-Overview 
+**For more details, please visit our page site about Muti-Agent Transformer: https://sites.google.com/view/multi-agent-transformer.**
 
 In short, MAT:
 
