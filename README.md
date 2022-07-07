@@ -96,3 +96,16 @@ Few-shot performance comparison with models pre-trained on complete HalfCheetah.
 Few-shot performance comparison with pre-trained models on multiple SMAC tasks. Sequence-modeling-based methods, MAT and MAT-Dec, enjoy superior performance over MAPPO, justifying their strong generalisation capability as few-shot learners.
 
 <img src="images/few_shot_smac.jpeg" align="middle" width="1000" border="1"/>
+
+
+## Citation
+Please cite as following if you think this work is helpful for you:
+```
+@article{wen2022multi,
+  title={Multi-Agent Reinforcement Learning is a Sequence Modeling Problem},
+  author={Wen, Muning and Kuba, Jakub Grudzien and Lin, Runji and Zhang, Weinan and Wen, Ying and Wang, Jun and Yang, Yaodong},
+  journal={arXiv preprint arXiv:2205.14953},
+  year={2022}
+}
+```
+
