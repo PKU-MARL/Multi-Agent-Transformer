@@ -1,7 +1,23 @@
 # Multi-Agent Transformer
 This repository implements the Multi-Agent Transformer (MAT), which is a novel neural network based on the encoder-decoder architecture that implements a multi-agent learning process through sequence models. **For more details, welcome to our page site about Muti-Agent Transformer: https://sites.google.com/view/multi-agent-transformer .**
 
-## Architecture and Dynamic data flow of MAT
+MAT is a novel neural network based on the encoder-decoder architecture that implements a multi-agent learning process through sequence models, aiming to build the bridge between MARL and SM so that the modeling power of modern sequence models, the Transformer, can be unleashed for MARL. 
+
+Overview 
+
+In short, MAT:
+
+* casts cooperative MARL into sequence modeling problems.
+
+* is an encoder-decoder architecture building the bridge between MARL and the Transformer.
+
+* is an online RL method trained by trails and errors, which is different from previous offline approaches, e.g. Decision Transformer or GATO (more like supervised learning). 
+
+* leverages the multi-agent advantage decomposition theorem [Kuba et.al] to render only linear time complexity for multi-agent problems and ensure a monotonic performance improvement guarantee.
+
+* achieves superior performance and generalisation capability on benchmarks including StarCraftII, Multi-Agent MuJoCo, Dexterous Hands Manipulation, and Google Research Football.
+
+We present GIFs below to show the architecture and dynamic data flow of MAT.
 |<img src="images/arch.gif" align="middle" width="1000" border="1"/>|
 |:-------------------------: |
 |Architecture|    
@@ -45,7 +61,19 @@ When your environment is ready, you could run shells in the "scripts" folder wit
 ```
 If you would like to change the configs of experiments, you could modify sh files or look for config.py for more details.
 
-## Demo
+
+## Multi-Agent Sequential Decision Paradigm
+
+Conventional multi-agent learning paradigm (left) wherein all agents take actions simultaneously vs. the multi-agent sequential decision paradigm (right) where agents take actions by following a sequential order, each agent accounts for decisions from preceding agents as red arrows suggest. 
+
+<img src="images/paradigm.jpeg" align="middle" width="1000" border="1"/>
+
+The key insight of the multi-agent sequential decision paradigm is the multi-agent advantage decomposition theorem (a discovery in [HATRPO/HAPPO](https://arxiv.org/abs/2109.11251) [ICLR 22, Kuba et.al], indicating the advantage of joint actions could be sequentially divided as shown below.
+
+<img src="images/math.png" align="middle" width="1000" border="1"/>
+
+## Performance Comparisons on Cooperative MARL Benchmarks
+
 MAT consistently outperforms its rivals, indicating its modeling capability for homogeneous-agent tasks (agents are interchangeable).
 
 Videos on four super-hard scenarios are shown below.
@@ -54,7 +82,7 @@ Videos on four super-hard scenarios are shown below.
 |:-----------: |:-------------------: |:-----------: |:----------: |
 |27m vs 30m|MMM2|6h vs 8z|3s5z vs 3s6z|    
 
-## Performance Comparisons on Cooperative MARL Benchmarks
+<img src="images/performance.jpeg" align="middle" width="1000" border="1"/>
 
 Demonstration and Performance comparison on Multi-Agent Mujoco HalfCheetah and  Bimanual Dexterous Hands Manipulation tasks, showing MAT's advantages in robot control for heterogeneous agents (agents are not interchangeable).
 
