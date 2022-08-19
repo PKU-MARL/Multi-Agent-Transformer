@@ -3,8 +3,8 @@ import argparse
 
 def get_config():
     """
-    The configuration parser for common hyperparameters of all environment. 
-    Please reach each `scripts/train/<env>_runner.py` file to find private hyperparameters
+    The configuration parser for hyper-parameters of all environment.
+    Please reach each `scripts/train/<env>_runner.py` file to find private hyper-parameters
     only used in <env>.
 
     Prepare parameters:

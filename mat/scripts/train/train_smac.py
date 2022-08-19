@@ -145,20 +145,7 @@ def main(args):
     np.random.seed(all_args.seed)
 
     # env
-    if all_args.env_name == "StarCraft2_transfer":
-        if all_args.map_name == "3s_vs_3z" or all_args.map_name == "3s_vs_4z":
-            num_agents = get_map_params("3s_vs_4z")["n_agents"]
-        elif all_args.map_name == "8m_vs_9m" or all_args.map_name == "10m_vs_11m":
-            num_agents = get_map_params("10m_vs_11m")["n_agents"]
-        elif all_args.map_name == "3s5z" or all_args.map_name == "1c3s5z":
-            num_agents = get_map_params("1c3s5z")["n_agents"]
-        elif all_args.map_name == "25m" or all_args.map_name == "27m_vs_30m":
-            num_agents = get_map_params("27m_vs_30m")["n_agents"]
-        else:
-            print("%s is not supported yet" % all_args.map_name)
-            raise NotImplementedError
-    else:
-        num_agents = get_map_params(all_args.map_name)["n_agents"]
+    num_agents = get_map_params(all_args.map_name)["n_agents"]
     all_args.run_dir = run_dir
     envs = make_train_env(all_args)
     eval_envs = make_eval_env(all_args) if all_args.use_eval else None

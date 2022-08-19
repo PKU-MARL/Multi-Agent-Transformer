@@ -8,7 +8,7 @@ from mat.algorithms.mat.algorithm.ma_transformer import MultiAgentTransformer
 
 class TransformerPolicy:
     """
-    MAPPO Policy  class. Wraps actor and critic networks to compute actions and value function predictions.
+    MAT Policy  class. Wraps actor and critic networks to compute actions and value function predictions.
 
     :param args: (argparse.Namespace) arguments containing relevant model and policy information.
     :param obs_space: (gym.Space) observation space.

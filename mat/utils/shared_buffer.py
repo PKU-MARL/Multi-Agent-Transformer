@@ -29,7 +29,7 @@ class SharedReplayBuffer(object):
     :param act_space: (gym.Space) action space for agents.
     """
 
-    def __init__(self, args, num_agents, obs_space, cent_obs_space, act_space):
+    def __init__(self, args, num_agents, obs_space, cent_obs_space, act_space, env_name):
         self.episode_length = args.episode_length
         self.n_rollout_threads = args.n_rollout_threads
         self.hidden_size = args.hidden_size
@@ -42,6 +42,7 @@ class SharedReplayBuffer(object):
         self._use_proper_time_limits = args.use_proper_time_limits
         self.algo = args.algorithm_name
         self.num_agents = num_agents
+        self.env_name = env_name
 
         obs_shape = get_shape_from_obs_space(obs_space)
         share_obs_shape = get_shape_from_obs_space(cent_obs_space)
@@ -220,43 +221,28 @@ class SharedReplayBuffer(object):
                 gae = 0
                 for step in reversed(range(self.rewards.shape[0])):
                     if self._use_popart or self._use_valuenorm:
-                        if self.algo == "mat" or self.algo == "mat_dec":
-                            value_t = value_normalizer.denormalize(self.value_preds[step])
-                            value_t_next = value_normalizer.denormalize(self.value_preds[step + 1])
-                            rewards_t = self.rewards[step]
+                        delta = self.rewards[step] + self.gamma * value_normalizer.denormalize(
+                            self.value_preds[step + 1]) * self.masks[step + 1] \
+                                - value_normalizer.denormalize(self.value_preds[step])
+                        gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
 
-                            # mean_v_t = np.mean(value_t, axis=-2, keepdims=True)
-                            # mean_v_t_next = np.mean(value_t_next, axis=-2, keepdims=True)
-                            # delta = rewards_t + self.gamma * self.masks[step + 1] * mean_v_t_next - mean_v_t
+                        # here is a patch for mpe, whose last step is timeout instead of terminate
+                        if self.env_name == "MPE" and step == self.rewards.shape[0] - 1:
+                            gae = 0
 
-                            delta = rewards_t + self.gamma * self.masks[step + 1] * value_t_next - value_t
-                            gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
-                            self.advantages[step] = gae
-                            self.returns[step] = gae + value_t
-                        else:
-                            delta = self.rewards[step] + self.gamma * value_normalizer.denormalize(
-                                self.value_preds[step + 1]) * self.masks[step + 1] \
-                                    - value_normalizer.denormalize(self.value_preds[step])
-                            gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
-                            self.returns[step] = gae + value_normalizer.denormalize(self.value_preds[step])
+                        self.advantages[step] = gae
+                        self.returns[step] = gae + value_normalizer.denormalize(self.value_preds[step])
                     else:
-                        if self.algo == "mat" or self.algo == "mat_dec":
-                            rewards_t = self.rewards[step]
-                            mean_v_t = np.mean(self.value_preds[step], axis=-2, keepdims=True)
-                            mean_v_t_next = np.mean(self.value_preds[step + 1], axis=-2, keepdims=True)
-                            delta = rewards_t + self.gamma * self.masks[step + 1] * mean_v_t_next - mean_v_t
+                        delta = self.rewards[step] + self.gamma * self.value_preds[step + 1] * \
+                                self.masks[step + 1] - self.value_preds[step]
+                        gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
 
-                            # delta = rewards_t + self.gamma * self.value_preds[step + 1] * \
-                            #         self.masks[step + 1] - self.value_preds[step]
-                            gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
-                            self.advantages[step] = gae
-                            self.returns[step] = gae + self.value_preds[step]
+                        # here is a patch for mpe, whose last step is timeout instead of terminate
+                        if self.env_name == "MPE" and step == self.rewards.shape[0] - 1:
+                            gae = 0
 
-                        else:
-                            delta = self.rewards[step] + self.gamma * self.value_preds[step + 1] * \
-                                    self.masks[step + 1] - self.value_preds[step]
-                            gae = delta + self.gamma * self.gae_lambda * self.masks[step + 1] * gae
-                            self.returns[step] = gae + self.value_preds[step]
+                        self.advantages[step] = gae
+                        self.returns[step] = gae + self.value_preds[step]
             else:
                 self.returns[-1] = next_value
                 for step in reversed(range(self.rewards.shape[0])):

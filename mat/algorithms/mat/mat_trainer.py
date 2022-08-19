@@ -8,7 +8,7 @@ from mat.algorithms.utils.util import check
 
 class MATTrainer:
     """
-    Trainer class for MAPPO to update policies.
+    Trainer class for MAT to update policies.
     :param args: (argparse.Namespace) arguments containing relevant model, policy, and env information.
     :param policy: (R_MAPPO_Policy) policy to update.
     :param device: (torch.device) specifies the device to run on (cpu/gpu).

@@ -95,7 +95,8 @@ class Runner(object):
                                         self.num_agents,
                                         self.envs.observation_space[0],
                                         share_observation_space,
-                                        self.envs.action_space[0])
+                                        self.envs.action_space[0],
+                                         self.all_args.env_name)
 
     def run(self):
         """Collect training data, perform training updates, and evaluate policy."""
