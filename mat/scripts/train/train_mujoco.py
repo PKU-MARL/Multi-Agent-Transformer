@@ -14,9 +14,7 @@ from mat.envs.ma_mujoco.multiagent_mujoco.mujoco_multi import MujocoMulti
 from mat.runner.shared.mujoco_runner import MujocoRunner as Runner
 from mat.envs.env_wrappers import ShareSubprocVecEnv, ShareDummyVecEnv
 
-"""Train script for SMAC."""
-
-
+"""Train script for MuJoCo."""
 def make_train_env(all_args):
     def get_env_fn(rank):
         def init_env():
@@ -91,15 +89,6 @@ def main(args):
     parser = get_config()
     all_args = parse_args(args, parser)
     print("mumu config: ", all_args)
-
-    if all_args.algorithm_name == "rmappo":
-        all_args.use_recurrent_policy = True
-        assert (all_args.use_recurrent_policy or all_args.use_naive_recurrent_policy), ("check recurrent policy!")
-    elif all_args.algorithm_name == "mappo" or all_args.algorithm_name == "mat" or all_args.algorithm_name == "mat_dec":
-        assert (all_args.use_recurrent_policy == False and all_args.use_naive_recurrent_policy == False), (
-            "check recurrent policy!")
-    else:
-        raise NotImplementedError
 
     if all_args.algorithm_name == "mat_dec":
         all_args.dec_actor = True
