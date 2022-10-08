@@ -4,6 +4,8 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 from mat.utils.shared_buffer import SharedReplayBuffer
+from mat.algorithms.mat.mat_trainer import MATTrainer as TrainAlgo
+from mat.algorithms.mat.algorithm.transformer_policy import TransformerPolicy as Policy
 
 def _t2n(x):
     """Convert torch tensor to a numpy array."""
@@ -63,13 +65,6 @@ class Runner(object):
             if not os.path.exists(self.save_dir):
                 os.makedirs(self.save_dir)
 
-        if self.algorithm_name == "mat" or self.algorithm_name == "mat_dec":
-            from mat.algorithms.mat.mat_trainer import MATTrainer as TrainAlgo
-            from mat.algorithms.mat.algorithm.transformer_policy import TransformerPolicy as Policy
-        else:
-            from mat.algorithms.mat.r_mappo import R_MAPPO as TrainAlgo
-            from mat.algorithms.mat.algorithm.rMAPPOPolicy import R_MAPPOPolicy as Policy
-
         share_observation_space = self.envs.share_observation_space[0] if self.use_centralized_V else self.envs.observation_space[0]
 
         print("obs_space: ", self.envs.observation_space)
@@ -121,10 +116,17 @@ class Runner(object):
     def compute(self):
         """Calculate returns for the collected data."""
         self.trainer.prep_rollout()
-        next_values = self.trainer.policy.get_values(np.concatenate(self.buffer.share_obs[-1]),
-                                                     np.concatenate(self.buffer.obs[-1]),
-                                                     np.concatenate(self.buffer.rnn_states_critic[-1]),
-                                                     np.concatenate(self.buffer.masks[-1]))
+        if self.buffer.available_actions is None:
+            next_values = self.trainer.policy.get_values(np.concatenate(self.buffer.share_obs[-1]),
+                                                         np.concatenate(self.buffer.obs[-1]),
+                                                         np.concatenate(self.buffer.rnn_states_critic[-1]),
+                                                         np.concatenate(self.buffer.masks[-1]))
+        else:
+            next_values = self.trainer.policy.get_values(np.concatenate(self.buffer.share_obs[-1]),
+                                                         np.concatenate(self.buffer.obs[-1]),
+                                                         np.concatenate(self.buffer.rnn_states_critic[-1]),
+                                                         np.concatenate(self.buffer.masks[-1]),
+                                                         np.concatenate(self.buffer.available_actions[-1]))
         next_values = np.array(np.split(_t2n(next_values), self.n_rollout_threads))
         self.buffer.compute_returns(next_values, self.trainer.value_normalizer)
     

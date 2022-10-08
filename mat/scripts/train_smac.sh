@@ -1,7 +1,7 @@
 #!/bin/sh
 env="StarCraft2"
 map="6h_vs_8z"
-algo="mat"
+algo="mat_encoder"
 exp="single"
 seed=1
 

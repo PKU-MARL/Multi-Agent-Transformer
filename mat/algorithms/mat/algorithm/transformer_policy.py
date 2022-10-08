@@ -19,6 +19,7 @@ class TransformerPolicy:
 
     def __init__(self, args, obs_space, cent_obs_space, act_space, num_agents, device=torch.device("cpu")):
         self.device = device
+        self.algorithm_name = args.algorithm_name
         self.lr = args.lr
         self.opti_eps = args.opti_eps
         self.weight_decay = args.weight_decay
@@ -45,11 +46,22 @@ class TransformerPolicy:
         self.num_agents = num_agents
         self.tpdv = dict(dtype=torch.float32, device=device)
 
-        self.transformer = MultiAgentTransformer(self.share_obs_dim, self.obs_dim, self.act_dim, num_agents,
-                                                 n_block=args.n_block, n_embd=args.n_embd, n_head=args.n_head,
-                                                 encode_state=args.encode_state, device=device,
-                                                 action_type=self.action_type, dec_actor=args.dec_actor,
-                                                 share_actor=args.share_actor)
+        if self.algorithm_name in ["mat", "mat_dec"]:
+            from mat.algorithms.mat.algorithm.ma_transformer import MultiAgentTransformer as MAT
+        elif self.algorithm_name == "mat_gru":
+            from mat.algorithms.mat.algorithm.mat_gru import MultiAgentGRU as MAT
+        elif self.algorithm_name == "mat_decoder":
+            from mat.algorithms.mat.algorithm.mat_decoder import MultiAgentDecoder as MAT
+        elif self.algorithm_name == "mat_encoder":
+            from mat.algorithms.mat.algorithm.mat_encoder import MultiAgentEncoder as MAT
+        else:
+            raise NotImplementedError
+
+        self.transformer = MAT(self.share_obs_dim, self.obs_dim, self.act_dim, num_agents,
+                               n_block=args.n_block, n_embd=args.n_embd, n_head=args.n_head,
+                               encode_state=args.encode_state, device=device,
+                               action_type=self.action_type, dec_actor=args.dec_actor,
+                               share_actor=args.share_actor)
         if args.env_name == "hands":
             self.transformer.zero_std()
 
@@ -119,7 +131,7 @@ class TransformerPolicy:
         rnn_states_critic = check(rnn_states_critic).to(**self.tpdv)
         return values, actions, action_log_probs, rnn_states_actor, rnn_states_critic
 
-    def get_values(self, cent_obs, obs, rnn_states_critic, masks):
+    def get_values(self, cent_obs, obs, rnn_states_critic, masks, available_actions=None):
         """
         Get value function predictions.
         :param cent_obs (np.ndarray): centralized input to the critic.
@@ -131,8 +143,10 @@ class TransformerPolicy:
 
         cent_obs = cent_obs.reshape(-1, self.num_agents, self.share_obs_dim)
         obs = obs.reshape(-1, self.num_agents, self.obs_dim)
+        if available_actions is not None:
+            available_actions = available_actions.reshape(-1, self.num_agents, self.act_dim)
 
-        values = self.transformer.get_values(cent_obs, obs)
+        values = self.transformer.get_values(cent_obs, obs, available_actions)
 
         values = values.view(-1, 1)
 

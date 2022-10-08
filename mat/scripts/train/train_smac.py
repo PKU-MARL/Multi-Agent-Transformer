@@ -86,15 +86,6 @@ def main(args):
     parser = get_config()
     all_args = parse_args(args, parser)
 
-    if all_args.algorithm_name == "rmappo":
-        all_args.use_recurrent_policy = True
-        assert (all_args.use_recurrent_policy or all_args.use_naive_recurrent_policy), ("check recurrent policy!")
-    elif all_args.algorithm_name == "mappo" or all_args.algorithm_name == "mat" or all_args.algorithm_name == "mat_dec":
-        assert (all_args.use_recurrent_policy == False and all_args.use_naive_recurrent_policy == False), (
-            "check recurrent policy!")
-    else:
-        raise NotImplementedError
-
     if all_args.algorithm_name == "mat_dec":
         all_args.dec_actor = True
         all_args.share_actor = True
