@@ -167,7 +167,8 @@ class SMACRunner(Runner):
         eval_episode = 0
 
         eval_episode_rewards = []
-        one_episode_rewards = []
+        # rewards of the current episode, accumulated separately for each eval thread
+        one_episode_rewards = np.zeros((self.n_eval_rollout_threads, self.num_agents, 1), dtype=np.float32)
 
         eval_obs, eval_share_obs, eval_available_actions = self.eval_envs.reset()
 
@@ -189,7 +190,7 @@ class SMACRunner(Runner):
             
             # Obser reward and next obs
             eval_obs, eval_share_obs, eval_rewards, eval_dones, eval_infos, eval_available_actions = self.eval_envs.step(eval_actions)
-            one_episode_rewards.append(eval_rewards)
+            one_episode_rewards += eval_rewards
 
             eval_dones_env = np.all(eval_dones, axis=1)
 
@@ -201,8 +202,8 @@ class SMACRunner(Runner):
             for eval_i in range(self.n_eval_rollout_threads):
                 if eval_dones_env[eval_i]:
                     eval_episode += 1
-                    eval_episode_rewards.append(np.sum(one_episode_rewards, axis=0))
-                    one_episode_rewards = []
+                    eval_episode_rewards.append(one_episode_rewards[eval_i].copy())
+                    one_episode_rewards[eval_i] = 0
                     if eval_infos[eval_i][0]['won']:
                         eval_battles_won += 1
 
