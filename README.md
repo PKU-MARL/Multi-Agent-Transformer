@@ -49,6 +49,12 @@ Please following the instructios in https://github.com/google-research/football.
 ### Bi-DexHands 
 Please following the instructios in https://github.com/PKU-MARL/DexterousHands. 
 
+### Level-Based Foraging
+``` Bash
+pip install lbforaging
+```
+Tasks are selected with `--scenario`, which takes the id of a registered LBF environment, e.g. `Foraging-8x8-2p-2f-coop-v3` (see https://github.com/semitable/lb-foraging).
+
 ## How to run
 When your environment is ready, you could run shells in the "scripts" folder with algo="mat" or algo="mat_dec". For example:
 ``` Bash
