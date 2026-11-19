@@ -227,7 +227,7 @@ def single_translate_local(ori_obs, map_info):
         ori_type_bits = ori_ally_feats[valid_idx, idx:idx+ori_unit_type_bits]
         ori_types = np.argwhere(ori_type_bits == 1.)[:, -1]
     else:
-        ori_types = np.zeros(len(valid_idx), dtype=np.int)
+        ori_types = np.zeros(len(valid_idx), dtype=int)
     unified_types = agent_types[ori_types]
     new_ally_feats[valid_idx, unified_types+6] = 1.
     idx += ori_unit_type_bits
@@ -246,7 +246,7 @@ def single_translate_local(ori_obs, map_info):
         ori_type_bits = ori_enemy_feats[valid_idx, idx:idx+ori_unit_type_bits]
         ori_types = np.argwhere(ori_type_bits == 1.)[:, -1]
     else:
-        ori_types = np.zeros(len(valid_idx), dtype=np.int)
+        ori_types = np.zeros(len(valid_idx), dtype=int)
     unified_types = enemy_types[ori_types]
     new_enemy_feats[valid_idx, unified_types+6] = 1.
 

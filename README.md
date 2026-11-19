@@ -28,6 +28,7 @@ We present GIFs below to show the architecture and dynamic data flow of MAT.
 ``` Bash
 pip install -r requirements.txt
 ```
+This installs the dependencies for SMAC and MPE (tested with Python 3.8, 3.10 and 3.11). Multi-agent MuJoCo, Google Research Football and Bi-DexHands need additional packages, see their sections below.
 
 ### Multi-agent MuJoCo
 Following the instructios in https://github.com/openai/mujoco-py and https://github.com/schroederdewitt/multiagent_mujoco to setup a mujoco environment. In the end, remember to set the following environment variables:
@@ -41,7 +42,7 @@ Run the script
 ``` Bash
 bash install_sc2.sh
 ```
-Or you could install them manually to other path you like, just follow here: https://github.com/oxwhirl/smac.
+Or you could install them manually to other path you like, just follow here: https://github.com/oxwhirl/smac. If StarCraft II is not installed in `~/StarCraftII`, set `SC2PATH` to its location.
 
 ### Google Research Football
 Please following the instructios in https://github.com/google-research/football. 
